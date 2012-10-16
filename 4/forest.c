@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "forest.h"
 
 /* Settings for the wind */
 #define WIND 0
@@ -19,8 +20,8 @@
  * 3. Output some images show the simulation
  * 4. Think about optimisation. (only looking at the burning trees?)
  */
-typedef struct {
-    char **grid;
-    signed int *burning;
-} forest;
 
+int forest_fire(int x, int y, double density)
+{
+
+}
