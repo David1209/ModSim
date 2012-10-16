@@ -4,8 +4,10 @@
 typedef struct {
     char **grid;
     signed int *burning;
-} forest;
+    int x, y;
+} Forest;
 
 int forest_fire(int x, int y, double density);
-
+Forest init_grid(int x, int y);
+void fill_grid(Forest f, double density);
 #endif
