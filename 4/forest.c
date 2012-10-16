@@ -23,5 +23,28 @@
 
 int forest_fire(int x, int y, double density)
 {
+    int i, j;
+    Forest forest;
+    printf("Forest Fire Simulation will be executed. Details:\n");
+    printf("Gridsize: %d by %d\n", x, y);
+    printf("Vegetation density: %g\n", density);
+    forest = init_grid(x, y);
+}
 
+Forest init_grid(int x, int y)
+{
+    Forest newgrid;
+    char **content;
+    int i;
+    newgrid = (Forest *)malloc(sizeof(Forest));
+    content = (char **)calloc(x, sizeof(char *));
+    for(i = 0; i < x; i++)
+        content[i] = (char *)calloc(y, sizeof(char));
+    newgrid->x = x;
+    newgrid->y = y;
+    newgrid->grid = content;
+    newgrid->burning = (int *)calloc(x*y, sizeof(int));
+    for(i = 0; i < x*y; i++)
+        newgrid->burning[i] = -1;
+    return newgrid;
 }
