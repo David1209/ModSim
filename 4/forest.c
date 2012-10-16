@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "forest.h"
 
 /* Settings for the wind */
@@ -29,6 +30,7 @@ int forest_fire(int x, int y, double density)
     printf("Gridsize: %d by %d\n", x, y);
     printf("Vegetation density: %g\n", density);
     forest = init_grid(x, y);
+    fill_grid(&forest, density);
 }
 
 Forest init_grid(int x, int y)
@@ -47,4 +49,26 @@ Forest init_grid(int x, int y)
     for(i = 0; i < x*y; i++)
         newgrid->burning[i] = -1;
     return newgrid;
+}
+
+void fill_grid(Forest *f, double density)
+{
+    int i, j;
+    srand(time(NULL));
+    for(i = 0; i < f->x; i++)
+    {
+        for(j = 0; j < f->y; j++)
+        {
+            double number = (rand() % 1000) / 1000.0;
+            if(number <= density)
+                f->grid[i][j] = VEGETATION;
+            else
+                f->grid[i][j] = BARREN;
+        }
+    }
+}
+
+void print_grid(Forest *f)
+{
+
 }
