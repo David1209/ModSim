@@ -12,10 +12,10 @@
  *  anyway, and one (or two, if there is enough time) of the last two.
  */
 
-
+#include "forest.h"
 
 int main()
 {
-    forest_fire(5, 5, 0.5);
+    forest_fire(50, 50, 0.9);
     return 0;
 }
