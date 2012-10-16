@@ -16,6 +16,6 @@
 
 int main()
 {
-
+    forest_fire(5, 5, 0.5);
     return 0;
 }

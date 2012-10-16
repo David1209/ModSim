@@ -31,6 +31,7 @@ int forest_fire(int x, int y, double density)
     printf("Vegetation density: %g\n", density);
     forest = init_grid(x, y);
     fill_grid(&forest, density);
+    printf_grid(&forest);
 }
 
 Forest init_grid(int x, int y)
@@ -70,5 +71,15 @@ void fill_grid(Forest *f, double density)
 
 void print_grid(Forest *f)
 {
-
+    int i, j, veg = 0;
+    for(i = 0; i < f->x; i++)
+    {
+        for(j = 0; j < f->y, j++)
+        {
+            printf("%d", f->grid[i][j]);
+            if(f->grid[i][j] == VEGETATION) veg++;
+        }
+        printf("\n");
+    }
+    printf("Out of %d cells, %d are vegetated.\n", f->x*f->y, veg);
 }
