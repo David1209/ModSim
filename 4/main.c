@@ -16,6 +16,6 @@
 
 int main()
 {
-    forest_fire(50, 50, 0.9);
+    forest_fire(8, 20, 0.6);
     return 0;
 }
