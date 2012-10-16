@@ -12,14 +12,7 @@
  *  anyway, and one (or two, if there is enough time) of the last two.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 
-/*
- * TODO FOR FOREST FIRE:
- * 1. Implement the grid (multi dimensional array)
- * 2.
- */
 
 int main()
 {
