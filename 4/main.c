@@ -12,6 +12,7 @@
  *  anyway, and one (or two, if there is enough time) of the last two.
  */
 
+#include <stdio.h>
 #include "forest.h"
 
 #define X 0
@@ -33,5 +34,11 @@ int main()
             forest_fire(dim[i][X], dim[i][Y], densities[j]);
         }
     }
+    FILE *gp;
+    gp = popen("gnuplot -persist", "w");
+    fprintf(gp, "test\n");
+    fprintf(gp, "plot sin(x)\n");
+    fprintf(gp, "rep cos(x)\n");
+    fclose(gp);
     return 0;
 }
