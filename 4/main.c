@@ -14,8 +14,24 @@
 
 #include "forest.h"
 
+#define X 0
+#define Y 1
+
+#define SMALL 0
+#define MEDIUM 1
+#define LARGE 2
+
 int main()
 {
-    forest_fire(15, 8, 0.8);
+    int dim[3][2] = {{10,10}, {50,40}, {250,250}};
+    double densities[] = {0.5, 0.6, 0.7, 0.8};
+    int i, j;
+    for(i = 0; i < 3; i++)
+    {
+        for(j = 0; j < 4; j++)
+        {
+            forest_fire(dim[i][X], dim[i][Y], densities[j]);
+        }
+    }
     return 0;
 }

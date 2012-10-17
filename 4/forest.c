@@ -20,6 +20,9 @@
 #define COLOR_YELLOW "\x1b[33m"
 #define COLOR_RESET "\x1b[0m"
 
+#define FONT_BOLD "27[1m"
+#define END_BOLD "27[0m"
+
 /*
  * TODO FOR FOREST FIRE:
  * 1. Implement the grid (multi dimensional array)
@@ -31,26 +34,28 @@
 int forest_fire(int x, int y, double density)
 {
     Forest *forest;
-    printf("Forest Fire Simulation will be executed. Details:\n");
+    printf(COLOR_YELLOW"\nForest Fire Simulation will be executed. "
+        COLOR_RESET "Details:\n");
     printf("Gridsize: %d by %d\n", x, y);
     printf("Vegetation density: %g\n", density);
     forest = init_grid(x, y);
     fill_grid(forest, density);
-    print_grid(forest);
-    printf("\n");
+    //print_grid(forest);
+    //printf("\n");
     while(1)
     {
         if(!forest_fire_sim(forest)) break;
-        print_grid(forest);
-        printf("\n");
-        sleep(1);
+        //print_grid(forest);
+       // printf("\n");
+       // sleep(1);
     }
     if(forest->crossed > 0)
-        printf("Opposite side of the forest reached in %d steps.\n",
-        forest->crossed);
+        printf(COLOR_GREEN "Opposite side of the forest reached in %d "
+        "steps.\n", forest->crossed);
     else
-        printf("Couldn't reach the other side of the forest. Burning stopped"
-        " after %d steps.\n", abs(forest->crossed));
+        printf(COLOR_RED "Couldn't reach the other side of the forest. "
+        "Burning stopped after %d steps.\n", abs(forest->crossed));
+    printf(COLOR_RESET);
     return 0;
 }
 
