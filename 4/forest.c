@@ -42,13 +42,7 @@ int forest_fire(int x, int y, double density)
     fill_grid(forest, density);
     //print_grid(forest);
     //printf("\n");
-    while(1)
-    {
-        if(!forest_fire_sim(forest)) break;
-        //print_grid(forest);
-       // printf("\n");
-       // sleep(1);
-    }
+    while(forest_fire_sim(forest));
     if(forest->crossed > 0)
         printf(COLOR_GREEN "Opposite side of the forest reached in %d "
         "steps.\n", forest->crossed);
