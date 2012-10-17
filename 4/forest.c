@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include "forest.h"
 
 /* Settings for the wind */
@@ -35,15 +36,21 @@ int forest_fire(int x, int y, double density)
     printf("Vegetation density: %g\n", density);
     forest = init_grid(x, y);
     fill_grid(forest, density);
-    int i = 0;
     print_grid(forest);
-    while(i < 10)
+    printf("\n");
+    while(1)
     {
-        forest_fire_sim(forest);
+        if(!forest_fire_sim(forest)) break;
         print_grid(forest);
-        i++;
         printf("\n");
+        sleep(1);
     }
+    if(forest->crossed > 0)
+        printf("Opposite side of the forest reached in %d steps.\n",
+        forest->crossed);
+    else
+        printf("Couldn't reach the other side of the forest. Burning stopped"
+        " after %d steps.\n", abs(forest->crossed));
     return 0;
 }
 
@@ -80,37 +87,44 @@ void fill_grid(Forest *f, double density)
                 f->grid[i][j] = BARREN;
         }
     }
-    f->burning[0] = 5;
-    f->burns = 1;
-    f->grid[0][5] = BURNING;
+    f->crossed = 0;
+    for(i = 0; i < f->x; i++)
+    {
+        if(f->grid[0][i] == VEGETATION)
+        {
+            f->grid[0][i] = BURNING;
+            f->burning[f->burns++] = i;
+        }
+    }
 }
 
 void print_grid(Forest *f)
 {
     int i, j, veg = 0;
-    for(i = 0; i < f->x; i++)
+    for(i = 0; i < f->y; i++)
     {
-        for(j = 0; j < f->y; j++)
+        for(j = 0; j < f->x; j++)
         {
-            if(f->grid[i][j] == 1)
+            if(f->grid[j][i] == 1)
                 printf(COLOR_GREEN);
-            if(f->grid[i][j] == 2)
+            if(f->grid[j][i] == 2)
                 printf(COLOR_RED);
-            if(f->grid[i][j] == 3)
+            if(f->grid[j][i] == 3)
                 printf(COLOR_YELLOW);
-            printf("%d", f->grid[i][j]);
+            printf("%d", f->grid[j][i]);
             printf(COLOR_RESET);
-            if(f->grid[i][j] == VEGETATION) veg++;
+            if(f->grid[j][i] == VEGETATION) veg++;
         }
         printf("\n");
     }
    // printf("Out of %d cells, %d are vegetated.\n", f->x*f->y, veg);
 }
 
-void forest_fire_sim(Forest *f)
+int forest_fire_sim(Forest *f)
 {
     int *newburns = (int *)calloc(f->x*f->y, sizeof(int));
     int i, burn = 0;
+    if(f->crossed < 1) f->crossed--;
     for(i = 0; i < f->burns; i++)
     {
         int x, y;
@@ -124,10 +138,14 @@ void forest_fire_sim(Forest *f)
             f->grid[x-1][y] = BURNING;
             //printf("NEW BURN: %d:%d (%d)\n", x-1, y, f->burning[i] - f->x);
         }
-        if(x < f->x && f->grid[x+1][y] == VEGETATION)
+        if(x < f->x-1 && f->grid[x+1][y] == VEGETATION)
         {
             newburns[burn++] = f->burning[i] + f->x;
             f->grid[x+1][y] = BURNING;
+            if(x == f->x-2 && f->crossed < 1)
+            {
+                f->crossed = abs(f->crossed);
+            }
             //printf("NEW BURN: %d:%d (%d)\n", x+1, y, f->burning[i] + f->x);
         }
         if(y > 0 && f->grid[x][y-1] == VEGETATION)
@@ -146,4 +164,6 @@ void forest_fire_sim(Forest *f)
     }
     f->burns = burn;
     f->burning = newburns;
+    if(burn == 0) return 0;
+    return 1;
 }
