@@ -44,10 +44,13 @@ int forest_fire(int x, int y, double density)
     //printf("\n");
     while(forest_fire_sim(forest));
     if(forest->crossed > 0)
+    {
         printf(COLOR_GREEN "Opposite side of the forest reached in %d "
-        "steps.\n", forest->crossed);
-    else
-        printf(COLOR_RED "Couldn't reach the other side of the forest. "
+            "steps.\n", forest->crossed);
+        printf(COLOR_RESET);
+        return forest->crossed;
+    }
+    printf(COLOR_RED "Couldn't reach the other side of the forest. "
         "Burning stopped after %d steps.\n", abs(forest->crossed));
     printf(COLOR_RESET);
     return 0;
