@@ -22,21 +22,21 @@
 #define MEDIUM 1
 #define LARGE 2
 
-#define GRIDS 3
-#define DENSITIES 4
+#define GRIDS 4
+#define DENSITIES 8
 
 int main()
 {
-    int dim[GRIDS][2] = {{10,10}, {50,40}, {250,250}};
-    double densities[DENSITIES] = {0.5, 0.6, 0.7, 0.8};
+    int dim[GRIDS][2] = {{10,10}, {40,40}, {50,70}, {75,100}};
+    double densities[DENSITIES] = {0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.8, 0.9};
     int steps[GRIDS][DENSITIES];
     int i, j;
     FILE *data;
     data = fopen("data.dat", "w+");
     fprintf(data, "# DATA FILE CREATED BY FOREST FIRE SIMULATION\n");
-    for(i = 0; i < 3; i++)
+    for(i = 0; i < GRIDS; i++)
     {
-        for(j = 0; j < 4; j++)
+        for(j = 0; j < DENSITIES; j++)
         {
             steps[i][j] = forest_fire(dim[i][X], dim[i][Y], densities[j]);
             printf("For gridsize %d:%d with density %f the other end of the "
