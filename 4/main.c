@@ -23,12 +23,12 @@
 #define LARGE 2
 
 #define GRIDS 4
-#define DENSITIES 8
+#define DENSITIES 15
 
 int main()
 {
-    int dim[GRIDS][2] = {{10,10}, {40,40}, {50,70}, {75,100}};
-    double densities[DENSITIES] = {0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.8, 0.9};
+    int dim[GRIDS][2] = {{10,20}, {40,40}, {50,40}, {75,75}};
+    double densities[DENSITIES] = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0};
     int steps[GRIDS][DENSITIES];
     int i, j;
     FILE *data;
@@ -53,8 +53,8 @@ int main()
     fprintf(gp, "set pointsize 2 \n");
     fprintf(gp, "set xlabel \"Number of steps required\\n(0 = not reached)\"\n");
     fprintf(gp, "set ylabel \"Forest Density\"\n");
-    fprintf(gp, "set cblabel \"Used gridsize\"\n");
-    fprintf(gp, "plot \"data.dat\" using 5:4:3 notitle with points lt palette pt 13\n");
+    fprintf(gp, "set cblabel \"Forest width\"\n");
+    fprintf(gp, "plot \"data.dat\" using 5:4:1 notitle with points lt palette pt 13\n");
     fprintf(gp, "set terminal png \n");
     fprintf(gp, "set output \"test.png\"\n");
     fprintf(gp, "replot\n");

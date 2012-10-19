@@ -12,5 +12,5 @@ Forest* init_grid(int x, int y);
 void fill_grid(Forest *f, double density);
 void print_grid(Forest *f);
 int forest_fire_sim(Forest *f);
-
+void cleanup_grid(Forest *f);
 #endif

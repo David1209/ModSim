@@ -20,17 +20,6 @@
 #define COLOR_YELLOW "\x1b[33m"
 #define COLOR_RESET "\x1b[0m"
 
-#define FONT_BOLD "27[1m"
-#define END_BOLD "27[0m"
-
-/*
- * TODO FOR FOREST FIRE:
- * 1. Implement the grid (multi dimensional array)
- * 2. Write some simple loops to emulate the forest fire
- * 3. Output some images show the simulation
- * 4. Think about optimisation. (only looking at the burning trees?)
- */
-
 int forest_fire(int x, int y, double density)
 {
     Forest *forest;
@@ -44,9 +33,9 @@ int forest_fire(int x, int y, double density)
     //printf("\n");
     while(forest_fire_sim(forest))
     {
-       // print_grid(forest);
-       // printf("\n");
-       // sleep(1);
+        //print_grid(forest);
+        //printf("\n");
+        //sleep(1);
     }
     if(forest->crossed > 0)
     {
@@ -58,6 +47,8 @@ int forest_fire(int x, int y, double density)
     printf(COLOR_RED "Couldn't reach the other side of the forest. "
         "Burning stopped after %d steps.\n", abs(forest->crossed));
     printf(COLOR_RESET);
+    cleanup_grid(forest);
+    free(forest);
     return 0;
 }
 
@@ -74,8 +65,6 @@ Forest* init_grid(int x, int y)
     newgrid->y = y;
     newgrid->grid = content;
     newgrid->burning = (int *)calloc(x*y, sizeof(int));
-    for(i = 0; i < x*y; i++)
-        newgrid->burning[i] = -1;
     return newgrid;
 }
 
@@ -95,7 +84,7 @@ void fill_grid(Forest *f, double density)
         }
     }
     f->crossed = 0;
-    for(i = 0; i < f->x; i++)
+    for(i = 0; i < f->y; i++)
     {
         if(f->grid[0][i] == VEGETATION)
         {
@@ -135,18 +124,18 @@ int forest_fire_sim(Forest *f)
     for(i = 0; i < f->burns; i++)
     {
         int x, y;
-        x = f->burning[i] / f->x;
-        y = f->burning[i] % f->x;
-        //printf("BURNING: %d:%d\n", x, y);
+        x = f->burning[i] / f->y;
+        y = f->burning[i] % f->y;
+        //printf("BURNING: %d:%d (%d)\n", x, y, f->burning[i]);
         if(x > 0 && f->grid[x-1][y] == VEGETATION)
         {
-            newburns[burn++] = f->burning[i] - f->x;
+            newburns[burn++] = f->burning[i] - f->y;
             f->grid[x-1][y] = BURNING;
-            //printf("NEW BURN: %d:%d (%d)\n", x-1, y, f->burning[i] - f->x);
+          //  printf("NEW BURN: %d:%d (%d)\n", x-1, y, f->burning[i] - f->x);
         }
         if(x < f->x-1 && f->grid[x+1][y] == VEGETATION)
         {
-            newburns[burn++] = f->burning[i] + f->x;
+            newburns[burn++] = f->burning[i] + f->y;
             f->grid[x+1][y] = BURNING;
             if(x == f->x-2 && f->crossed < 1)
             {
@@ -160,7 +149,7 @@ int forest_fire_sim(Forest *f)
             f->grid[x][y-1] = BURNING;
             //printf("NEW BURN: %d:%d (%d)\n", x, y-1, f->burning[i] - 1);
         }
-        if(y < f->y && f->grid[x][y+1] == VEGETATION)
+        if(y < f->y-1 && f->grid[x][y+1] == VEGETATION)
         {
             newburns[burn++] = f->burning[i] + 1;
             f->grid[x][y+1] = BURNING;
@@ -172,4 +161,17 @@ int forest_fire_sim(Forest *f)
     f->burning = newburns;
     if(burn == 0) return 0;
     return 1;
+}
+
+void cleanup_grid(Forest *f)
+{
+    int i;
+    for(i = 0; i < f->x; i++)
+        free(f->grid[i]);
+    free(f->grid);
+    f->x = 0;
+    f->y = 0;
+    f->burns = 0;
+    f->crossed = 0;
+    free(f->burning);
 }
