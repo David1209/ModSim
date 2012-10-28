@@ -7,7 +7,8 @@ typedef struct Beast {
 
 typedef struct Field {
     int x, y, preds, preys, incr, decr, prey_thres, pred_thres;
-    Beast ***grid;
+    int **grid;
+    Beast **list;
 } Field;
 
 #define PREDATOR 0

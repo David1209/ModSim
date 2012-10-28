@@ -5,5 +5,5 @@
 
 int main()
 {
-    predator_model(10, 10, 2, 3, 5, 5, 250, 250);
+    predator_model(15, 10, 2, 20, 1, 50, 250, 250);
 }

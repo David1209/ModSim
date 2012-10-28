@@ -1,6 +1,6 @@
 // PREDATOR.C
 // BY DAVID VAN ERKELENS
-// AND VICTOR DEN HAAN
+// AND VICTOR DEN HAANi
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 #define COLOR_RESET "\x1b[0m"
 
 int predator_model(int x, int y, int preds, int preys, int pred_decr,
-    int pred_inc, int pred_thres, int prey_thres)
+    int prey_inc, int pred_thres, int prey_thres)
 {
     Field *f;
     Beast *b[x*y];
@@ -25,8 +25,13 @@ int predator_model(int x, int y, int preds, int preys, int pred_decr,
         exit(0);
     }
     f = init_grid(x, y);
+    f->list = (Beast **)b;
+    f->prey_thres = prey_thres;
+    f->pred_thres = pred_thres;
+    f->incr = prey_inc;
+    f->decr = pred_decr;
     //b = (Beast **)malloc(preds + preys * sizeof(Beast *));
-    fill_grid(f, x, y, b);
+    fill_grid(f, preds, preys, b);
     printf("%d\n", b[0]->energy);
     print_grid(f);
     printf("%d\n", pred_prey_sim(f, b, 50));
@@ -36,16 +41,16 @@ int predator_model(int x, int y, int preds, int preys, int pred_decr,
 Field* init_grid(int x, int y)
 {
     Field *newfield;
-    Beast ***content;
+    int **content;
     int i;
     newfield = (Field *)malloc(sizeof(Field));
-    content = (Beast ***)malloc(x * sizeof(Beast **));
+    content = (int **)malloc(x * sizeof(int *));
     for(i = 0; i < x; i++)
     {
         int j;
-        content[i] = (Beast **)malloc(y * sizeof(Beast *));
+        content[i] = (int *)malloc(y * sizeof(int));
         for(j = 0; j < y; j++)
-            content[i][j] = NULL;
+            content[i][j] = -1;
     }
     newfield->x = x;
     newfield->y = y;
@@ -77,9 +82,13 @@ void fill_grid(Field *f, int preds, int preys, Beast **b)
             newbeast->energy = PRED_INIT;
         }
         b[i] = newbeast;
-        f->grid[x][y] = newbeast;
+        f->grid[x][y] = i;
         printf("New beast (%d) inserted into cell %d:%d (health: %d)\n",
             newbeast->type, newbeast->x, b[i]->y, newbeast->energy);
+    }
+    for(i = preds + preys; i < f->x * f->y; i++)
+    {
+        b[i] = NULL;
     }
 }
 
@@ -89,7 +98,7 @@ void get_free_cell(Field *f, int *x, int *y)
     srand(time(NULL));
     nx = rand() % f->x;
     ny = rand() % f->y;
-    while(f->grid[nx][ny] != NULL)
+    while(f->grid[nx][ny] != -1)
     {
         nx = rand() % f->x;
         ny = rand() % f->y;
@@ -105,9 +114,9 @@ void print_grid(Field *f)
     {
         for(j = 0; j < f->y; j++)
         {
-            if(f->grid[i][j] == NULL)
+            if(f->grid[i][j] == -1)
                 printf("0");
-            else if(f->grid[i][j]->type == PREDATOR)
+            else if(f->list[f->grid[i][j]]->type == PREDATOR)
                 printf(COLOR_RED"H"COLOR_RESET);
             else
                 printf(COLOR_GREEN"P"COLOR_RESET);
@@ -118,41 +127,49 @@ void print_grid(Field *f)
 
 int pred_prey_sim(Field *f, Beast **b, int msteps)
 {
-    int beasts = f->preds + f->preys, steps = 0;
+    int beasts = f->x * f->y, steps = 0, ret;
     while(1)
     {
         int i;
         steps++;
+        printf("Predators: %d, Preys: %d\n", f->preds, f->preys);
         for(i = 0; i < beasts; i++)
         {
             int nx, ny, x, y;
             if(b[i] == NULL) continue;
-            //printf("aaaaa%d\n", b[0]->type);
             x = b[i]->x;
             y = b[i]->y;
-            if(get_free_adj_cell(f, b[i], &nx, &ny))
+            ret = get_free_adj_cell(f, b[i], &nx, &ny);
+            if(ret)
             {
                 //printf("test\n");
-                if(b[i]->type == PREDATOR && f->grid[nx][ny] != NULL &&
-                    f->grid[nx][ny]->type == PREY)
+                if(ret == 2)
                 {
-                    printf("%d:%d eats %d:%d\n", x, y, nx, ny);
-                    eat_beast(f, f->grid[nx][ny], b[i]);
+                    //printf("%d:%d eats %d:%d\n", x, y, nx, ny);
+                    eat_beast(f, b[f->grid[nx][ny]], b[i]);
                 }
-                if(move_beast(f, b[i], x, y, nx, ny))
+                else if(move_beast(f, b[i], x, y, nx, ny))
                 {
-                    printf("%d:%d moves to %d:%d\n", x, y, nx, ny);
-                    procreate_beast(f, b[i], b);
+                    char *names[2] = {"Predator", "Prey"};
+                    //printf("%s %d:%d moves to %d:%d\n", names[b[i]->type], x, y, nx, ny);
+                    //procreate_beast(f, b[i], b);
                 }
             }
+            procreate_beast(f, b[i], b);
         }
-        print_grid(f);
-        printf("\n");
-        sleep(1);
+        //print_grid(f);
+        //printf("\n");
+        //sleep(1);
         if(f->preds == 0)
+        {
+            printf("The predators went extinct.\n");
             return steps;
+        }
         if(f->preys == 0)
+        {
+            printf("The preys went extinct.\n");
             return -1 * steps;
+        }
         if(steps == msteps)
             break;
     }
@@ -162,7 +179,7 @@ int pred_prey_sim(Field *f, Beast **b, int msteps)
 int get_free_adj_cell(Field *f, Beast *b, int *nx, int *ny)
 {
     int dir, tx, ty, i, x, y;
-    srand(time(NULL));
+    srand(time(NULL)+b->x+b->y);
     dir = rand() % 4;
     x = b->x;
     y = b->y;
@@ -171,39 +188,29 @@ int get_free_adj_cell(Field *f, Beast *b, int *nx, int *ny)
     //printf("xy %d:%d\n", x, y);
     for(i = 0; i < 4; i++)
     {
-        if(dir == 0)
-        {
-            if(x > 0) tx = x - 1;
-            ty = y;
-        }
-        else if(dir == 1)
-        {
-            if(y < f->y) ty = y + 1;
-            tx = x;
-        }
-        else if(dir == 2)
-        {
-            if(x < f->x - 1) tx = x + 1;
-            ty = y;
-        }
-        else
-        {
-            if(y > 0) ty = y - 1;
-            tx = x;
-        }
-       // printf("%d:%d\n", tx, ty);
-        if(f->grid[tx][ty] == NULL)
+        //printf("1\n");
+        tx = x;
+        ty = y;
+        if(dir == 0 && x > 0) tx --;
+        if(dir == 1 && y < f->y - 1) ty ++;
+        if(dir == 2 && x < f->x - 1) tx ++;
+        if(dir == 3 && y > 0) ty --;
+        //printf("2\n");
+        //printf("%d:%d\n", tx, ty);
+        if(f->grid[tx][ty] == -1)
         {
             *nx = tx;
             *ny = ty;
             return 1;
         }
-        if(b->type == PREDATOR && f->grid[tx][ty]->type == PREY)
+        //printf("2.4\n");
+        if(b->type == PREDATOR && f->list[f->grid[tx][ty]]->type == PREY)
         {
             *nx = tx;
             *ny = ty;
-            return 1;
+            return 2;
         }
+        //printf("3\n");
         dir++;
         dir %= 4;
     }
@@ -223,7 +230,7 @@ void kill_beast(Field *f, Beast *b)
     else
         f->preys--;
     //free(f->grid[b->x][b->y]);
-    f->grid[b->x][b->y] = NULL;
+    f->grid[b->x][b->y] = -1;
 }
 
 int move_beast(Field *f, Beast *b, int ox, int oy, int nx, int ny)
@@ -243,7 +250,7 @@ int move_beast(Field *f, Beast *b, int ox, int oy, int nx, int ny)
     }
     //printf("Moving beast to %d:%d, clearing %d:%d\n", nx, ny, ox, oy);
     f->grid[nx][ny] = f->grid[ox][oy];
-    f->grid[ox][oy] = NULL;
+    f->grid[ox][oy] = -1;
     b->x = nx;
     b->y = ny;
     return 1;
@@ -251,7 +258,7 @@ int move_beast(Field *f, Beast *b, int ox, int oy, int nx, int ny)
 
 void procreate_beast(Field *f, Beast *b, Beast **list)
 {
-    if(b->type == PREDATOR && b->energy >= f->pred_thres)
+    /*if(b->type == PREDATOR && b->energy >= f->pred_thres)
     {
         Beast dummy;
         int x, y;
@@ -264,8 +271,8 @@ void procreate_beast(Field *f, Beast *b, Beast **list)
             b->energy = newhealth;
             create_beast(f, list, x, y, PREDATOR, newhealth);
         }
-    }
-    else if(b->energy >= f->prey_thres)
+    }*/
+    if(b->type == PREY && b->energy >= f->prey_thres)
     {
         int x, y;
         if(get_free_adj_cell(f, b, &x, &y))
@@ -274,6 +281,7 @@ void procreate_beast(Field *f, Beast *b, Beast **list)
             b->energy = newhealth;
             create_beast(f, list, x, y, PREY, newhealth);
         }
+        f->preys ++;
     }
 }
 
@@ -289,7 +297,7 @@ void create_beast(Field *f, Beast **b, int x, int y, int type, int energy)
     newbeast->energy = energy;
     i = get_free_slot(f, b);
     b[i] = newbeast;
-    f->grid[x][y] = newbeast;
+    f->grid[x][y] = i;
 }
 
 int get_free_slot(Field *f, Beast **list)
