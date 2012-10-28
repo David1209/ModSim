@@ -6,7 +6,7 @@ typedef struct Beast {
 } Beast;
 
 typedef struct Field {
-    int x, y, preds, preys, incr, decr, prey_thres, pred_thres;
+    int x, y, preds, preys, incr, decr, prey_thres;
     int **grid;
     Beast **list;
 } Field;
@@ -21,7 +21,7 @@ Field* init_grid(int x, int y);
 void fill_grid(Field *f, int preds, int preys, Beast **b);
 
 int predator_model(int x, int y, int preds, int preys, int pred_decr,
-    int prey_inc, int pred_thres, int prey_thres);
+    int prey_inc, int prey_thres);
 int get_free_adj_cell(Field *f, Beast *b, int *nx, int *ny);
 int pred_prey_sim(Field *f, Beast **b, int msteps);
 void get_free_cell(Field *f, int *x, int *y);

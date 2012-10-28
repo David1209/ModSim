@@ -14,7 +14,7 @@
 #define COLOR_RESET "\x1b[0m"
 
 int predator_model(int x, int y, int preds, int preys, int pred_decr,
-    int prey_inc, int pred_thres, int prey_thres)
+    int prey_inc, int prey_thres)
 {
     Field *f;
     Beast *b[x*y];
@@ -27,15 +27,9 @@ int predator_model(int x, int y, int preds, int preys, int pred_decr,
     f = init_grid(x, y);
     f->list = (Beast **)b;
     f->prey_thres = prey_thres;
-    f->pred_thres = pred_thres;
     f->incr = prey_inc;
-    f->decr = pred_decr;
-    //b = (Beast **)malloc(preds + preys * sizeof(Beast *));
     fill_grid(f, preds, preys, b);
-    printf("%d\n", b[0]->energy);
-    print_grid(f);
-    printf("%d\n", pred_prey_sim(f, b, 50));
-    return 0;
+    return pred_prey_sim(f, b, 50);
 }
 
 Field* init_grid(int x, int y)
@@ -83,8 +77,8 @@ void fill_grid(Field *f, int preds, int preys, Beast **b)
         }
         b[i] = newbeast;
         f->grid[x][y] = i;
-        printf("New beast (%d) inserted into cell %d:%d (health: %d)\n",
-            newbeast->type, newbeast->x, b[i]->y, newbeast->energy);
+        //printf("New beast (%d) inserted into cell %d:%d (health: %d)\n",
+        //    newbeast->type, newbeast->x, b[i]->y, newbeast->energy);
     }
     for(i = preds + preys; i < f->x * f->y; i++)
     {
@@ -132,7 +126,7 @@ int pred_prey_sim(Field *f, Beast **b, int msteps)
     {
         int i;
         steps++;
-        printf("Predators: %d, Preys: %d\n", f->preds, f->preys);
+        //printf("Predators: %d, Preys: %d\n", f->preds, f->preys);
         for(i = 0; i < beasts; i++)
         {
             int nx, ny, x, y;
@@ -148,9 +142,8 @@ int pred_prey_sim(Field *f, Beast **b, int msteps)
                     //printf("%d:%d eats %d:%d\n", x, y, nx, ny);
                     eat_beast(f, b[f->grid[nx][ny]], b[i]);
                 }
-                else if(move_beast(f, b[i], x, y, nx, ny))
+                else move_beast(f, b[i], x, y, nx, ny);
                 {
-                    char *names[2] = {"Predator", "Prey"};
                     //printf("%s %d:%d moves to %d:%d\n", names[b[i]->type], x, y, nx, ny);
                     //procreate_beast(f, b[i], b);
                 }
@@ -162,12 +155,12 @@ int pred_prey_sim(Field *f, Beast **b, int msteps)
         //sleep(1);
         if(f->preds == 0)
         {
-            printf("The predators went extinct.\n");
+            //printf("The predators went extinct.\n");
             return steps;
         }
         if(f->preys == 0)
         {
-            printf("The preys went extinct.\n");
+            //printf("The preys went extinct.\n");
             return -1 * steps;
         }
         if(steps == msteps)
