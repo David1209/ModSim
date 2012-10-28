@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper,oneside,noindent]{article}
+\usepackage{tikz}
+\begin{document}
+ \title{Eindopdracht Modeleren en Simuleren 2012}
+ \author{David van Erkelens en Victor den Haan}
+\setlength{\parindent}{0pt}
+ \maketitle
+\section{Inleiding}
+Sommige problemen kunnen beter opgelost worden met een computer. Het voorspellen van bosbranden of het bekijken van een Predator / Prey model kunnen behoorlijk hersenbrekend zijn. Daarom zijn er enkele van deze modellen ge\"implementeerd, zodat het leven net een tikje makkelijker wordt.
+
+ \section{Forest Fire}
+Bosbranden zijn levensgevaarlijk. Daarom is het verschrikklijk belangrijk om te kunnen voorspellen hoe deze zich ontwikkelen. Daarom is er een computermodel ontwikkeld om dit te kunnen voorspellen.
+
+\subsection{Programmacode}
+Voor het voorspellen van een bosbrand is er gekozen voor de implementatie van een cellulaire automaat. Hiervoor is een grid aangemaakt, welke opgeslagen wordt in een struct. Daarnaast wordt er een lijst van brandende bomen bijgehouden, vanuit hier kan voorspeld worden welke bomen hierna zullen gaan branden. \\
+Voor deze voorspellen wordt een Von Neumann buurt gebruikt: dit houdt in dat alleen de bomen die rechtstreeks grenzen aan de brandende boom aangestoken kunnen worden. \\
+Voor de voorspelling wordt de eerste rij bomen aangestoken, vanaf hier wordt gekeken hoe de brand zich dan ontwikkeld. Indien de brand de overkant van het bos bereikt, wordt doorgegeven hoeveel stappen er nodig zijn geweest om hier te komen. Indien de overkant niet bereikt wordt, wordt 0 terug gegeven. De tijdstap in de simulatie wordt herhaald totdat er geen elke boom meer brandt. \\
+De simulatie wordt uigevoerd met verschillende maten bossen en dichtheden begroei\"ing, en hier vallen bepaalde conclusies uit te trekken.
+
+\subsection{Opmerkingen}
+Als er gekeken wordt naar de grafiek die het model produceert (test.png), valt op te merken dat er onder een bepaalde dichtheid begroei\"ing geen oversteek door het bos is, onafhankelijk van de grootte van het bos. Boven een bepaalde dichtheid wordt echter altijd de overkant behaald. Deze dichtheid ligt zo rond de 60\%.
+
+\section{Predator / Prey Model}
+De afhankelijkheid van een jager en een prooi zijn prachtig om te aanschouwen. Echter, niet iedereen heeft tijd en zin om de natuur in te trekken en dit van dichtbij de aanschouwen. Daarom wordt er nu een model besproken wat deze prachtige afhankelijkheid op het computerscherm tovert.
+
+\subsection{Programmacode}
+Dit model gebruikt voor een groot gedeelte dezelfde basis als de bosbrandemulatie, met als enig verschil dat de elementen op het bord zich anders gedragen. Zo nemen de dieren willekeurige stappen, waar de bosbrand voorspelbaar was. Daarom geeft het programma ook iedere keer een andere uitkomt.
+
+\subsection{Opmerkingen}
+Vanwege tijdgebrek zijn wij niet toegekomen aan het testen van dit model, daarom hebben wij nog geen opmerkingen over dit model. Wij hebben wel bepaalde vermoedens, maar kunnen deze niet bevestigen. Wij gaan ons model nog wel afmaken, maar dit zal helaas pas na de deadline zijn.
+
+\section{Conclusie}
+Uit de werkzaamheden valt de concluderen dat verschillende modellen zeer goed via een cellulaire automaat zijn te simuleren. Aangezien echter het probleem van een snel naderende deadline de kop opstak, hebben wij nog niet alles af kunnen maken wat we wilden doen. Daarom zijn wij niet echt tevreden met ons resultaat, ondanks dat we de opdracht nog af zullen gaan maken.
+
+\end{document}
