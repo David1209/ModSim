@@ -137,7 +137,7 @@ int pred_prey_sim(Field *f, Beast **b, int msteps)
                     f->grid[nx][ny]->type == PREY)
                 {
                     printf("%d:%d eats %d:%d\n", x, y, nx, ny);
-                    eat_beast(f, f->grid[nx][ny], f->grid[x][y]);
+                    eat_beast(f, f->grid[nx][ny], b[i]);
                 }
                 if(move_beast(f, b[i], x, y, nx, ny))
                 {
@@ -241,6 +241,7 @@ int move_beast(Field *f, Beast *b, int ox, int oy, int nx, int ny)
     {
         b->energy += f->incr;
     }
+    //printf("Moving beast to %d:%d, clearing %d:%d\n", nx, ny, ox, oy);
     f->grid[nx][ny] = f->grid[ox][oy];
     f->grid[ox][oy] = NULL;
     b->x = nx;

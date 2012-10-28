@@ -1,4 +1,4 @@
-PROGNAME=modsim_assignment_4
+PROGNAME=predator
 VERSION=1.0
 
 MKDIR=mkdir
